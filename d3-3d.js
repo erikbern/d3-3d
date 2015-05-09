@@ -50,7 +50,7 @@ function render() {
     }
 }
 
-$(document).ready(function() {
+function do3d(elmId) {
     // Make an SVG Container
     var svgContainer = d3.select("body").append("svg")
 	.attr("width", 10000)
@@ -64,4 +64,4 @@ $(document).ready(function() {
     }
 
     setInterval(render, 3);
-});
+}
