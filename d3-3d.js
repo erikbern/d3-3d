@@ -57,11 +57,11 @@ function do3d(elmId) {
 	.attr("height", 10000);
 
 
-    for (var i = 0; i < 100; i++) {
-	var p = svgContainer.append('path').attr('fill', 'black').attr('stroke-width', '1px');
+    for (var i = 0; i < 50; i++) {
+	var p = svgContainer.append('path').attr('fill', '#ddd').attr('stroke-width', '1px');
 	points.push(p);
 	xyz.push([Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]);
     }
 
-    setInterval(render, 3);
+    setInterval(render, 50);
 }
