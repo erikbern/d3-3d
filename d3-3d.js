@@ -52,7 +52,7 @@ function render() {
 
 function do3d(elmId) {
     // Make an SVG Container
-    var svgContainer = d3.select("body").append("svg")
+    var svgContainer = d3.select(elmId).append("svg")
 	.attr("width", 10000)
 	.attr("height", 10000);
 
