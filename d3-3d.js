@@ -25,9 +25,9 @@ var xyz = [];
 
 function render() {
     // console.log('render!');
-    a += 0.001;
-    b += 0.002;
-    c += 0.003;
+    a += 0.0010;
+    b += 0.0007;
+    c += 0.0008;
 
     m = rot([a, b, c]);
 
@@ -50,7 +50,7 @@ function render() {
     }
 }
 
-function do3d(elmId) {
+function do3d(elmId, delay, color) {
     // Make an SVG Container
     var svgContainer = d3.select(elmId).append("svg")
 	.attr("width", 10000)
@@ -58,10 +58,10 @@ function do3d(elmId) {
 
 
     for (var i = 0; i < 50; i++) {
-	var p = svgContainer.append('path').attr('fill', '#ddd').attr('stroke-width', '1px');
+	var p = svgContainer.append('path').attr('fill', color).attr('stroke-width', '1px');
 	points.push(p);
 	xyz.push([Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]);
     }
 
-    setInterval(render, 50);
+    setInterval(render, delay);
 }
