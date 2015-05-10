@@ -44,9 +44,7 @@ function render() {
 	    y *= depth / (z + depth);
 	    corners.push([(x + 0.5) * 1000, (y + 0.5) * 1000]);
 	}
-	hull = d3.geom.hull(corners);
-
-	points[i].datum(hull).attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+	points[i].attr('d', 'M' + d3.geom.hull(corners).join('L') + 'Z');
     }
 }
 
