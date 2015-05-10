@@ -19,7 +19,15 @@ function rot(as) {
     return m;
 }
 
-var a = 0, b = 0, c = 0;
+function binom_gaussian(n) {
+    // Generate a Gaussian approximation by taking a bunch of uniforms
+    var x = -n / 2;
+    for (var i = 0; i < n; i++)
+	x += Math.random();
+    return x / Math.sqrt(n);
+}
+
+var a = Math.random(), b = Math.random(), c = Math.random();
 var points = [];
 var xyz = [];
 
@@ -34,12 +42,12 @@ function render() {
     for (var i = 0; i < points.length; i++) {
 	var corners = [];
 	for (var j = 0; j < 8; j++) {
-	    var p = (j>>2), q = (j>>1)&1, r = j&1;
-	    p = p*0.1; q = q*0.1; r = r*0.1;
+	    var size = 0.1;
+	    var p = (j>>2) * size, q = ((j>>1)&1) * size, r = (j&1) * size;
 	    var x = m[0][0] * (xyz[i][0]+p) + m[0][1] * (xyz[i][1]+q) + m[0][2] * (xyz[i][2]+r);
 	    var y = m[1][0] * (xyz[i][0]+p) + m[1][1] * (xyz[i][1]+q) + m[1][2] * (xyz[i][2]+r);
 	    var z = m[2][0] * (xyz[i][0]+p) + m[2][1] * (xyz[i][1]+q) + m[2][2] * (xyz[i][2]+r);
-	    var depth = 1.0;
+	    var depth = 0.9;
 	    x *= depth / (z + depth);
 	    y *= depth / (z + depth);
 	    corners.push([(x + 0.5) * 1000, (y + 0.5) * 1000]);
@@ -58,7 +66,7 @@ function do3d(elmId, delay, color) {
     for (var i = 0; i < 50; i++) {
 	var p = svgContainer.append('path').attr('fill', color).attr('stroke-width', '1px');
 	points.push(p);
-	xyz.push([Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]);
+	xyz.push([binom_gaussian(10), binom_gaussian(10), binom_gaussian(10)]);
     }
 
     setInterval(render, delay);
