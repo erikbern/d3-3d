@@ -1,4 +1,5 @@
-function rot(as) {
+function Viewport(as) {
+    // Precompute a rotation matrix by multiplying xy, yz, and zx rotation matrices
     var m = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
     for (var i = 0; i < 3; i++) {
 	var j = (i+1)%3, k = (i+2)%3;
@@ -16,7 +17,22 @@ function rot(as) {
 		    o[p][r] += m[p][q] * n[q][r];
 	m = o;
     }
-    return m;
+    this.m = m;
+    this.depth = 1.0;
+}
+
+Viewport.prototype.project = function(cs) {
+    // Apply rotation matrix
+    var ds = [0, 0, 0];
+    for (var i = 0; i < 3; i++)
+	for (var j = 0; j < 3; j++)
+	    ds[i] += this.m[i][j] * cs[j];
+
+    // Apply depth transformation
+    var x = ds[0] * this.depth / (ds[2] + this.depth);
+    var y = ds[1] * this.depth / (ds[2] + this.depth);
+
+    return [x, y];
 }
 
 function binom_gaussian(n) {
@@ -55,23 +71,21 @@ D33D.prototype.render = function() {
     this.b += 0.0007;
     this.c += 0.0008;
 
-    var m = rot([this.a, this.b, this.c]);
+    var v = new Viewport([this.a, this.b, this.c]);
     var width = $(this.elmId).width();
 
     var xyz = this.xyz;
     for (var i = 0; i < this.points.length; i++) {
+	var size = 0.1; // Cube size
 	var corners = [];
-	for (var j = 0; j < 8; j++) {
-	    var size = 0.1;
-	    var p = (j>>2) * size, q = ((j>>1)&1) * size, r = (j&1) * size;
-	    var x = m[0][0] * (xyz[i][0]+p) + m[0][1] * (xyz[i][1]+q) + m[0][2] * (xyz[i][2]+r);
-	    var y = m[1][0] * (xyz[i][0]+p) + m[1][1] * (xyz[i][1]+q) + m[1][2] * (xyz[i][2]+r);
-	    var z = m[2][0] * (xyz[i][0]+p) + m[2][1] * (xyz[i][1]+q) + m[2][2] * (xyz[i][2]+r);
-	    var depth = 0.9;
-	    x *= depth / (z + depth);
-	    y *= depth / (z + depth);
-	    corners.push([(x + 0.5) * width, (y + 0.5) * width]);
+	for (var j = 0; j < 8; j++) { // All 8 corners of the cube
+	    var cs = [xyz[i][0] + (j>>2) * size,
+		      xyz[i][1] + ((j>>1)&1) * size,
+		      xyz[i][2] + (j&1) * size]
+	    var xy = v.project(cs);
+	    corners.push([(xy[0] + 0.5) * width, (xy[1] + 0.5) * width]);
 	}
+	// Use the convex hull to compute the polygon given the individual corner points
 	this.points[i].attr('d', 'M' + d3.geom.hull(corners).join('L') + 'Z');
     }
 }
