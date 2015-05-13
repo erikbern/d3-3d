@@ -27,19 +27,39 @@ function binom_gaussian(n) {
     return x / Math.sqrt(n);
 }
 
-var a = Math.random(), b = Math.random(), c = Math.random();
-var points = [];
-var xyz = [];
+function D33D(elmId, delay, color) {
+    this.a = Math.random(), this.b = Math.random(), this.c = Math.random();
+    this.points = [];
+    this.xyz = [];
+    this.elmId = elmId;
 
-function render() {
-    // console.log('render!');
-    a += 0.0010;
-    b += 0.0007;
-    c += 0.0008;
+    // Make an SVG Container
+    var svgContainer = d3.select(elmId).append("svg")
+	.attr("width", '100%')
+	.attr("height", '100%');
 
-    m = rot([a, b, c]);
+    for (var i = 0; i < 50; i++) {
+	var p = svgContainer.append('path').attr('fill', color).attr('stroke-width', '1px');
+	this.points.push(p);
+	this.xyz.push([binom_gaussian(10), binom_gaussian(10), binom_gaussian(10)]);
+    }
 
-    for (var i = 0; i < points.length; i++) {
+    var self = this;
+    setInterval(function() {
+	self.render();
+    }, delay);
+}
+
+D33D.prototype.render = function() {
+    this.a += 0.0010;
+    this.b += 0.0007;
+    this.c += 0.0008;
+
+    var m = rot([this.a, this.b, this.c]);
+    var width = $(this.elmId).width();
+
+    var xyz = this.xyz;
+    for (var i = 0; i < this.points.length; i++) {
 	var corners = [];
 	for (var j = 0; j < 8; j++) {
 	    var size = 0.1;
@@ -50,24 +70,12 @@ function render() {
 	    var depth = 0.9;
 	    x *= depth / (z + depth);
 	    y *= depth / (z + depth);
-	    corners.push([(x + 0.5) * 1000, (y + 0.5) * 1000]);
+	    corners.push([(x + 0.5) * width, (y + 0.5) * width]);
 	}
-	points[i].attr('d', 'M' + d3.geom.hull(corners).join('L') + 'Z');
+	this.points[i].attr('d', 'M' + d3.geom.hull(corners).join('L') + 'Z');
     }
 }
 
 function do3d(elmId, delay, color) {
-    // Make an SVG Container
-    var svgContainer = d3.select(elmId).append("svg")
-	.attr("width", 10000)
-	.attr("height", 10000);
-
-
-    for (var i = 0; i < 50; i++) {
-	var p = svgContainer.append('path').attr('fill', color).attr('stroke-width', '1px');
-	points.push(p);
-	xyz.push([binom_gaussian(10), binom_gaussian(10), binom_gaussian(10)]);
-    }
-
-    setInterval(render, delay);
+    new D33D(elmId, delay, color);
 }
