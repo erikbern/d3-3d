@@ -43,7 +43,7 @@ function binom_gaussian(n) {
     return x / Math.sqrt(n);
 }
 
-function D33D(elmId, delay, color) {
+function D33D(elmId, color) {
     this.a = Math.random(), this.b = Math.random(), this.c = Math.random();
     this.points = [];
     this.xyz = [];
@@ -60,17 +60,26 @@ function D33D(elmId, delay, color) {
 	this.xyz.push([binom_gaussian(10), binom_gaussian(10), binom_gaussian(10)]);
     }
 
+}
+
+D33D.prototype.loop = function(delay) {
     var self = this;
     setInterval(function() {
+	self.a += 0.0010;
+	self.b += 0.0007;
+	self.c += 0.0008;
+
 	self.render();
     }, delay);
+    return this;
+}
+
+D33D.prototype.scroll = function(offset) {
+    this.a = offset;
+    this.render();
 }
 
 D33D.prototype.render = function() {
-    this.a += 0.0010;
-    this.b += 0.0007;
-    this.c += 0.0008;
-
     var v = new Viewport([this.a, this.b, this.c]);
     var width = $(this.elmId).width();
 
@@ -90,6 +99,6 @@ D33D.prototype.render = function() {
     }
 }
 
-function do3d(elmId, delay, color) {
-    new D33D(elmId, delay, color);
+function do3d(elmId, color) {
+    return new D33D(elmId, color);
 }
